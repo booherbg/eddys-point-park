@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eddy's Point Park</title>
+<style>
+  html,body{margin:0;padding:0;height:100%;background:#1d1f19;overflow:hidden}
+  canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+</style>
+</head>
+<body>
+<canvas id="glcanvas" tabindex="1"></canvas>
+<script src="mq_js_bundle.js?v=6e466dc"></script>
+<script src="storage.js?v=6e466dc"></script>
+<script>
+  // The game starts once storage.js has read the parks from IndexedDB; an older
+  // storage.js (a browser's cached copy) has no such wait, and the game starts at once.
+  (window.loopy_storage_ready ? loopy_storage_ready() : Promise.resolve()).then(function () { load("app.wasm?v=6e466dc"); });
+</script>
+</body>
+</html>
