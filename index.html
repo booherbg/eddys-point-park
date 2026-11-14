@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Eddy's Point Park</title>
+<style>
+  /* The game's grass under everything, so no frame of the page is ever dark (b305). */
+  html,body{margin:0;padding:0;height:100%;background:#8fdc7c;overflow:hidden}
+  canvas{position:absolute;inset:0;width:100%;height:100%;image-rendering:pixelated}
+  /* A phone: every touch on the canvas is the game's (it pans, pinches, and holds by
+     itself), so the browser does not scroll, zoom, select, or open its press-and-hold menu. */
+  canvas{touch-action:none;-webkit-touch-callout:none;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+  /* The loading screen (web/loading.js), over the game's canvas until the title is up. */
+  /* Hidden until loading.js shows it, so a page whose script did not come never covers the game. */
+  #loading{display:none;z-index:1;background:#8fdc7c;image-rendering:pixelated;image-rendering:crisp-edges}
+</style>
+</head>
+<body>
+<canvas id="glcanvas" tabindex="1"></canvas>
+<canvas id="loading" data-wasm-bytes="16379936"></canvas>
+<script>var loopy_wasm = "app.wasm?v=f2b2b8423";</script>
+<script src="loading.js?v=f2b2b8423"></script>
+<script src="loading-coaster.js?v=f2b2b8423"></script>
+<script src="mq_js_bundle.js?v=f2b2b8423"></script>
+<script src="storage.js?v=f2b2b8423"></script>
+<script>
+  // The loading screen hears the game's steps (its plugin, after storage.js's stand-ins). The wasm's download began
+  // in loading.js; the game starts once storage.js has read the parks from IndexedDB, and an older storage.js (a
+  // browser's cached copy) has no such wait, and the game starts at once.
+  if (window.loopy_loading_plugin) { loopy_loading_plugin(); }
+  (window.loopy_storage_ready ? loopy_storage_ready() : Promise.resolve()).then(function () { load(loopy_wasm); });
+</script>
+<script>
+  // Offline play: once the game has been opened online, a service worker keeps it for the next time. A browser without
+  // service workers (an old one, or a page opened from a file) just plays online, and a failure here never stops the game.
+  try {
+    if ("serviceWorker" in navigator && /^https?:$/.test(location.protocol)) {
+      window.addEventListener("load", function () {
+        try { navigator.serviceWorker.register("sw.js").catch(function () {}); } catch (e) {}
+      });
+    }
+  } catch (e) {}
+</script>
+</body>
+</html>
